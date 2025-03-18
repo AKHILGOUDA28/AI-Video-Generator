@@ -99,13 +99,18 @@
 </head>
 <body ng-controller="VideoController">
     <h1>AI Prompt to Video Generator</h1>
-    <input type="text" class="user-input" ng-model="userInput" placeholder="Enter your prompt...">
+    
+    <!-- Input field with keypress event -->
+    <input type="text" class="user-input" ng-model="userInput" placeholder="Enter your prompt..." ng-keypress="checkKeyPress($event)">
+    
     <button class="button" ng-click="sendMessage()">Generate Video</button>
+
     <div class="chat-container" id="chatContainer">
         <div ng-repeat="message in messages" class="chat-message" ng-class="{'user': message.type === 'user', 'bot': message.type === 'bot'}">
             {{ message.text }}
         </div>
     </div>
+
     <div class="video-container" ng-if="videoUrl">
         <video controls>
             <source ng-src="{{videoUrl}}" type="video/mp4">
@@ -113,13 +118,16 @@
         </video>
         <a ng-href="{{videoUrl}}" download class="download-link">Download Video (1080p)</a>
     </div>
+
     <script>
         var app = angular.module('videoApp', []);
+
         app.controller('VideoController', function($scope, $http) {
             $scope.messages = [];
             $scope.userInput = "";
             $scope.videoUrl = "";
 
+            // Function to send message and fetch video
             $scope.sendMessage = function() {
                 if (!$scope.userInput) return;
 
@@ -141,6 +149,13 @@
                 .catch(function(error) {
                     $scope.messages.push({ text: "Error fetching video.", type: 'bot' });
                 });
+            };
+
+            // Function to detect Enter key press
+            $scope.checkKeyPress = function(event) {
+                if (event.keyCode === 13) {
+                    $scope.sendMessage();
+                }
             };
         });
     </script>
